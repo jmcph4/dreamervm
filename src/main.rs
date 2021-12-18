@@ -1,10 +1,9 @@
 use clap::Parser;
 
-pub mod common;
+use crate::cli::Opts;
 
-#[derive(Clone, Debug, Parser)]
-#[clap(about, version, author)]
-pub struct Opts {/* TODO: add command-line options here! */}
+pub mod cli;
+pub mod common;
 
 fn main() {
     let _opts: Opts = Opts::parse(); /* TODO: remove underscore */
