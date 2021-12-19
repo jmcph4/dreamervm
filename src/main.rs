@@ -4,6 +4,7 @@ use crate::cli::Opts;
 
 pub mod cli;
 pub mod common;
+pub mod core;
 
 fn main() {
     let _opts: Opts = Opts::parse(); /* TODO: remove underscore */
