@@ -1,6 +1,6 @@
 use crate::common::types::{word_bytes, Word};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Instruction {
     Nop,
     Halt,

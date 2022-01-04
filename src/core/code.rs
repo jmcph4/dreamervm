@@ -4,6 +4,7 @@ use crate::core::instruction::{Instruction, InstructionParseError};
 #[derive(Clone, Debug)]
 pub struct VecCode(pub Vec<Instruction>);
 
+#[allow(dead_code)]
 #[derive(Copy, Clone, Debug)]
 pub struct CodeParseError {
     err: InstructionParseError,

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::common::types::Word;
 
-trait LinearlyAddressable {
+pub trait LinearlyAddressable {
     fn read(&self, address: Word) -> Word;
     fn write(&mut self, address: Word, data: Word);
 }
