@@ -85,7 +85,7 @@ impl Machine {
 
     pub fn run_callback(
         &mut self,
-        f: &dyn Fn(State, Instruction) -> (),
+        f: &dyn Fn(State, Instruction),
     ) -> Result<State, MachineError> {
         let mut curr_pos: Word = 0;
 

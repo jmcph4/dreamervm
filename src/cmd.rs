@@ -3,7 +3,7 @@ use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::core::code::{Code, CodeParseError};
 use crate::core::instruction::Instruction;

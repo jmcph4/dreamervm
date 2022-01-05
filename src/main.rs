@@ -1,12 +1,7 @@
-use std::fs;
-use std::path::PathBuf;
-
 use clap::Parser;
 
 use crate::cli::Opts;
 use crate::cmd::CommandError;
-use crate::core::code::Code;
-use crate::core::machine::Machine;
 
 pub mod cli;
 pub mod cmd;
