@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use serde::{Deserialize, Serialize};
+
 use crate::common::types::Word;
 
 pub trait LinearlyAddressable {
@@ -7,7 +9,7 @@ pub trait LinearlyAddressable {
     fn write(&mut self, address: Word, data: Word);
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct HashMemory(HashMap<Word, Word>);
 
 impl Default for HashMemory {

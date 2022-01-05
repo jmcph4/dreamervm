@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::common::types::Word;
 
 pub const MAX_STACK_DEPTH: usize = 65535;
@@ -8,7 +10,7 @@ pub enum StackError {
     Empty,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Stack(Vec<Word>);
 
 impl Default for Stack {
