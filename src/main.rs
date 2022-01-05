@@ -1,13 +1,26 @@
+use std::fs;
+use std::path::PathBuf;
+
 use clap::Parser;
 
 use crate::cli::Opts;
+use crate::cmd::CommandError;
+use crate::core::code::Code;
+use crate::core::machine::Machine;
 
 pub mod cli;
+pub mod cmd;
 pub mod common;
 pub mod core;
 
-fn main() {
-    let _opts: Opts = Opts::parse(); /* TODO: remove underscore */
+fn main() -> Result<(), CommandError> {
+    let opts: Opts = Opts::parse();
 
-    println!("Hello, world!");
+    match opts {
+        Opts::Run {
+            path,
+            trace,
+            output,
+        } => cmd::run(path, trace, output),
+    }
 }

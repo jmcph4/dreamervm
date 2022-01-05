@@ -17,8 +17,8 @@ pub enum MachineError {
 
 #[derive(Clone, Debug)]
 pub struct Machine {
-    state: State,
-    prog: Code,
+    pub state: State,
+    pub prog: Code,
 }
 
 impl Machine {
@@ -68,6 +68,37 @@ impl Machine {
             /* apply transition function */
             let new_state: State =
                 Self::step(self.state.clone(), curr_instruction)?;
+
+            /* write state */
+            self.state = new_state;
+
+            if curr_instruction == Instruction::Halt {
+                return Ok(self.state.clone());
+            }
+
+            /* jump */
+            curr_pos = self.state.pc;
+        }
+
+        Ok(self.state.clone())
+    }
+
+    pub fn run_callback(
+        &mut self,
+        f: &dyn Fn(State, Instruction) -> (),
+    ) -> Result<State, MachineError> {
+        let mut curr_pos: Word = 0;
+
+        while (curr_pos as usize) < self.prog.0.len() {
+            /* grab current instruction */
+            let curr_instruction: Instruction = self.prog.0[curr_pos as usize];
+
+            /* apply transition function */
+            let new_state: State =
+                Self::step(self.state.clone(), curr_instruction)?;
+
+            /* callback */
+            f(new_state.clone(), curr_instruction);
 
             /* write state */
             self.state = new_state;
