@@ -695,6 +695,44 @@ mod ops {
 
             assert_eq!(actual_result, expected_result);
         }
+
+        #[test]
+        fn test_pop_normal() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: some_value,
+                stack: Stack(vec![some_value]),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                pop(initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                reg: some_value,
+                stack: Stack::default(),
+                memory: Memory::default(),
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_pop_stack_empty() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                pop(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::StackEmpty);
+
+            assert_eq!(actual_result, expected_result);
+        }
     }
 
     #[allow(dead_code)]
