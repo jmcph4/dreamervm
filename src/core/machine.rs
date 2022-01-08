@@ -5,7 +5,7 @@ use crate::core::memory::Memory;
 use crate::core::stack::{Stack, MAX_STACK_DEPTH};
 use crate::core::state::State;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MachineError {
     InsufficientArguments,
     OutOfBounds,
@@ -485,6 +485,276 @@ mod ops {
                 },
                 ..state
             })
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_nop_normal() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                nop(initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_halt_normal() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                halt(initial_state.clone());
+
+            let expected_state: State = initial_state;
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_load_normal_uninitialised() {
+            let some_address: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: 0,
+                stack: Stack(vec![some_address]),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                load(initial_state.clone());
+
+            let expected_value: Word = 0; /* for the uninitialised case */
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                stack: Stack(vec![expected_value]),
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_load_normal_initialised() {
+            let some_address: Word = 12; /* arbitrary */
+            let some_value: Word = 33; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                stack: Stack(vec![some_address]),
+                memory: {
+                    let mut tmp_memory: Memory = Memory::default();
+                    tmp_memory.write(some_address, some_value);
+                    tmp_memory
+                },
+                reg: 0,
+            };
+
+            let actual_result: Result<State, MachineError> =
+                load(initial_state.clone());
+
+            let expected_value: Word = some_value;
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                stack: Stack(vec![expected_value]),
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_load_insufficient_arguments_by_1() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                load(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::InsufficientArguments);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_store_normal() {
+            let some_address: Word = 12; /* arbitrary */
+            let some_value: Word = 33; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                stack: Stack(vec![some_value, some_address]),
+                memory: Memory::default(),
+                reg: 0,
+            };
+
+            let actual_result: Result<State, MachineError> =
+                store(initial_state.clone());
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                stack: Stack::default(),
+                memory: {
+                    let mut tmp_memory: Memory = Memory::default();
+                    tmp_memory.write(some_address, some_value);
+                    tmp_memory
+                },
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_store_insufficient_arguments_by_1() {
+            let some_address: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                stack: Stack(vec![some_address]),
+                memory: Memory::default(),
+                reg: 0,
+            };
+
+            let actual_result: Result<State, MachineError> =
+                store(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::InsufficientArguments);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_store_insufficient_arguments_by_2() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                store(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::InsufficientArguments);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_push_normal() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: some_value,
+                stack: Stack::default(),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                push(initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                reg: initial_state.reg,
+                stack: Stack(vec![some_value]),
+                memory: Memory::default(),
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_push_stack_full() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: some_value,
+                stack: full_stack(),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                push(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::StackFull);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_pop_normal() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: some_value,
+                stack: Stack(vec![some_value]),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                pop(initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                reg: some_value,
+                stack: Stack::default(),
+                memory: Memory::default(),
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_pop_stack_empty() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                pop(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::StackEmpty);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_set_normal() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                set(some_value, initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                reg: some_value,
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        fn full_stack() -> Stack {
+            Stack((0..(MAX_STACK_DEPTH as Word)).collect())
         }
     }
 }

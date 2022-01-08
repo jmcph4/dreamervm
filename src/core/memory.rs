@@ -9,7 +9,7 @@ pub trait LinearlyAddressable {
     fn write(&mut self, address: Word, data: Word);
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct HashMemory(HashMap<Word, Word>);
 
 impl Default for HashMemory {
