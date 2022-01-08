@@ -11,7 +11,7 @@ pub enum StackError {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Stack(Vec<Word>);
+pub struct Stack(pub Vec<Word>);
 
 impl Default for Stack {
     fn default() -> Self {
