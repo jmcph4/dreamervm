@@ -4,13 +4,13 @@ use crate::common::types::Word;
 
 pub const MAX_STACK_DEPTH: usize = 65535;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum StackError {
     Full,
     Empty,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Stack(Vec<Word>);
 
 impl Default for Stack {

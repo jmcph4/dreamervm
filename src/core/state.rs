@@ -7,7 +7,7 @@ use crate::common::types::Word;
 use crate::core::memory::Memory;
 use crate::core::stack::Stack;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct State {
     pub pc: Word,
     pub reg: Word,
