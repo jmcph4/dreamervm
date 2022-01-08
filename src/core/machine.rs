@@ -651,5 +651,54 @@ mod ops {
 
             assert_eq!(actual_result, expected_result);
         }
+
+        #[test]
+        fn test_push_normal() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: some_value,
+                stack: Stack::default(),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                push(initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                reg: initial_state.reg,
+                stack: Stack(vec![some_value]),
+                memory: Memory::default(),
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_push_stack_full() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                reg: some_value,
+                stack: full_stack(),
+                memory: Memory::default(),
+            };
+
+            let actual_result: Result<State, MachineError> =
+                push(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::StackFull);
+
+            assert_eq!(actual_result, expected_result);
+        }
+    }
+
+    #[allow(dead_code)]
+    fn full_stack() -> Stack {
+        Stack((0..(MAX_STACK_DEPTH as Word)).collect())
     }
 }
