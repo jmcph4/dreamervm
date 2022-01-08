@@ -579,11 +579,72 @@ mod ops {
         }
 
         #[test]
-        fn test_load_insufficient_arguments() {
+        fn test_load_insufficient_arguments_by_1() {
             let initial_state: State = State::default();
 
             let actual_result: Result<State, MachineError> =
                 load(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::InsufficientArguments);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_store_normal() {
+            let some_address: Word = 12; /* arbitrary */
+            let some_value: Word = 33; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                stack: Stack(vec![some_value, some_address]),
+                memory: Memory::default(),
+                reg: 0,
+            };
+
+            let actual_result: Result<State, MachineError> =
+                store(initial_state.clone());
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                stack: Stack::default(),
+                memory: {
+                    let mut tmp_memory: Memory = Memory::default();
+                    tmp_memory.write(some_address, some_value);
+                    tmp_memory
+                },
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_store_insufficient_arguments_by_1() {
+            let some_address: Word = 12; /* arbitrary */
+            let initial_state: State = State {
+                pc: 0,
+                stack: Stack(vec![some_address]),
+                memory: Memory::default(),
+                reg: 0,
+            };
+
+            let actual_result: Result<State, MachineError> =
+                store(initial_state.clone());
+
+            let expected_result: Result<State, MachineError> =
+                Err(MachineError::InsufficientArguments);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
+        #[test]
+        fn test_store_insufficient_arguments_by_2() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                store(initial_state.clone());
 
             let expected_result: Result<State, MachineError> =
                 Err(MachineError::InsufficientArguments);
