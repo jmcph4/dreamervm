@@ -5,7 +5,7 @@ use crate::core::memory::Memory;
 use crate::core::stack::{Stack, MAX_STACK_DEPTH};
 use crate::core::state::State;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MachineError {
     InsufficientArguments,
     OutOfBounds,
@@ -485,6 +485,28 @@ mod ops {
                 },
                 ..state
             })
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_nop_normal() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                nop(initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
         }
     }
 }
