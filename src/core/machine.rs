@@ -733,10 +733,9 @@ mod ops {
 
             assert_eq!(actual_result, expected_result);
         }
-    }
 
-    #[allow(dead_code)]
-    fn full_stack() -> Stack {
-        Stack((0..(MAX_STACK_DEPTH as Word)).collect())
+        fn full_stack() -> Stack {
+            Stack((0..(MAX_STACK_DEPTH as Word)).collect())
+        }
     }
 }
