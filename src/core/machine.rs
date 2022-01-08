@@ -508,5 +508,19 @@ mod ops {
 
             assert_eq!(actual_result, expected_result);
         }
+
+        #[test]
+        fn test_halt_normal() {
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                halt(initial_state.clone());
+
+            let expected_state: State = initial_state;
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
     }
 }
