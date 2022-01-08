@@ -734,6 +734,25 @@ mod ops {
             assert_eq!(actual_result, expected_result);
         }
 
+        #[test]
+        fn test_set_normal() {
+            let some_value: Word = 12; /* arbitrary */
+            let initial_state: State = State::default();
+
+            let actual_result: Result<State, MachineError> =
+                set(some_value, initial_state.clone());
+
+            let expected_state: State = State {
+                pc: initial_state.pc + 1,
+                reg: some_value,
+                ..initial_state
+            };
+            let expected_result: Result<State, MachineError> =
+                Ok(expected_state);
+
+            assert_eq!(actual_result, expected_result);
+        }
+
         fn full_stack() -> Stack {
             Stack((0..(MAX_STACK_DEPTH as Word)).collect())
         }
